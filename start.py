@@ -1,5 +1,4 @@
 import csv
-import time
 import datetime
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -7,11 +6,16 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
-from googletrans import Translator
 
-WebName = "BBC"
+# Change the URL variable value to a link of your choice. Example: "https://www.bbc.com"
 URL = "https://www.bbc.com"
-tag = 'a'
+
+# (Optional) Change the WebName variable value to a name that represents the link. Example for the above: "BBC"
+WebName = "BBC"
+
+# (Important) Change the tag variable value to the HTML tag used to contain the date in the website you chose.
+# For Example: BBC uses a 'time' tag. You can find this using the browser inspector.
+tag = 'time'
 
 
 def time_format(gdate):
@@ -70,7 +74,7 @@ def time_format(gdate):
 def link_visit(link):
     src = requests.get(link)
     p_content = BeautifulSoup(src.content, 'html.parser')
-    a_time = p_content.find('time')
+    a_time = p_content.find(tag)
     print("Processing Link :", link)
     if a_time is not None:
         time = time_format(a_time.text)
@@ -80,7 +84,7 @@ def link_visit(link):
 
 
 def link_extract(content):
-    for aLink in content.find_all(tag):
+    for aLink in content.find_all('a'):
         link = aLink.get('href')
         if "https://" in link and link is not None:
             link_visit(link)
